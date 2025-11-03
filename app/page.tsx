@@ -46,7 +46,7 @@ export default function Home() {
                 The Gateway for Volunteering
               </h1>
               <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10 text-balance">
-                The simplest wayyyy to find local volunteering opportunities that match your passion, made to make volunteering experience smooth
+                The simplest way to find local volunteering opportunities that match your passion, made to make volunteering experience smooth
               </p>
               {/* Note: I'm making this a simple button that directs to opportunities, as seen in the image. */}
               <Button size="lg" className="shadow-lg" asChild> 
