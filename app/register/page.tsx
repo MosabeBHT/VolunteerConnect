@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
@@ -58,7 +57,6 @@ function RoleSelectionStep({
               role === "volunteer" ? "border-primary bg-primary-light" : "border-border bg-surface hover:border-primary"
             }`}
           >
-            <div className="text-2xl mb-2"></div>
             <h3 className="font-bold text-lg text-foreground mb-2">I'm a Volunteer</h3>
             <p className="text-sm text-foreground-light">
               Find meaningful opportunities and make a difference in your community
@@ -71,7 +69,6 @@ function RoleSelectionStep({
               role === "ngo" ? "border-primary bg-primary-light" : "border-border bg-surface hover:border-primary"
             }`}
           >
-            <div className="text-2xl mb-2"></div>
             <h3 className="font-bold text-lg text-foreground mb-2">I'm an Organization</h3>
             <p className="text-sm text-foreground-light">Post missions and connect with passionate volunteers</p>
           </button>
@@ -86,6 +83,8 @@ function RoleSelectionStep({
 }
 
 function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
+  const baseInterests = ["Education", "Environment", "Healthcare", "Community", "Animals", "Arts"]
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -94,14 +93,15 @@ function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
     confirmPassword: "",
     phone: "",
     location: "",
-    interests: [] as string[],
+    interests: [] as string[], // selected interests (including any custom ones)
   })
 
-  const interests = ["Education", "Environment", "Healthcare", "Community", "Animals", "Arts"]
+  const [showOther, setShowOther] = useState(false)
+  const [customInterest, setCustomInterest] = useState("")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement actual registration
+    // TODO: implement registration
     console.log("Volunteer registration:", formData)
   }
 
@@ -112,6 +112,24 @@ function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
         ? prev.interests.filter((i) => i !== interest)
         : [...prev.interests, interest],
     }))
+  }
+
+  // Combine base interests with any custom interests the user added (avoid duplicates)
+  const renderedInterests = [
+    ...baseInterests,
+    ...formData.interests.filter((i) => !baseInterests.includes(i)),
+  ]
+
+  const addCustomInterest = () => {
+    const trimmed = customInterest.trim()
+    if (trimmed === "") return
+    // if it's already selected, do nothing; otherwise add it and mark as selected
+    setFormData((prev) => {
+      if (prev.interests.includes(trimmed)) return prev
+      return { ...prev, interests: [...prev.interests, trimmed] }
+    })
+    setCustomInterest("")
+    setShowOther(false)
   }
 
   return (
@@ -128,10 +146,9 @@ function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
               <label className="text-sm font-medium text-foreground">First Name</label>
               <input
                 type="text"
-                placeholder="John"
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
@@ -139,10 +156,9 @@ function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
               <label className="text-sm font-medium text-foreground">Last Name</label>
               <input
                 type="text"
-                placeholder="Doe"
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
@@ -153,10 +169,9 @@ function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
             <label className="text-sm font-medium text-foreground">Email Address</label>
             <input
               type="email"
-              placeholder="you@example.com"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               required
             />
           </div>
@@ -167,20 +182,18 @@ function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
               <label className="text-sm font-medium text-foreground">Phone Number</label>
               <input
                 type="tel"
-                placeholder="+1 (555) 000-0000"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Location</label>
               <input
                 type="text"
-                placeholder="City, State"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
           </div>
@@ -189,7 +202,7 @@ function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
           <div className="space-y-3">
             <label className="text-sm font-medium text-foreground">Areas of Interest</label>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {interests.map((interest) => (
+              {renderedInterests.map((interest) => (
                 <button
                   key={interest}
                   type="button"
@@ -203,7 +216,36 @@ function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
                   {interest}
                 </button>
               ))}
+
+              {/* "Other" Button */}
+              <button
+                type="button"
+                onClick={() => setShowOther((prev) => !prev)}
+                className={`p-2 rounded-lg border-2 transition-smooth text-sm font-medium ${
+                  showOther ? "border-primary bg-primary-light text-primary" : "border-border bg-surface text-foreground-light hover:border-primary"
+                }`}
+              >
+                Other
+              </button>
             </div>
+
+            {/* Show input when "Other" clicked */}
+            {showOther && (
+              <div className="mt-3 flex items-center gap-2">
+                <input
+                  type="text"
+                  value={customInterest}
+                  onChange={(e) => setCustomInterest(e.target.value)}
+                  className="flex-1 px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                <Button
+                  type="button"
+                  onClick={addCustomInterest}
+                >
+                  Add
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Password Fields */}
@@ -212,10 +254,9 @@ function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
               <label className="text-sm font-medium text-foreground">Password</label>
               <input
                 type="password"
-                placeholder="••••••••"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
@@ -223,10 +264,9 @@ function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
               <label className="text-sm font-medium text-foreground">Confirm Password</label>
               <input
                 type="password"
-                placeholder="••••••••"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
@@ -265,7 +305,6 @@ function NGORegistrationStep({ onBack }: { onBack: () => void }) {
     website: "",
     location: "",
     description: "",
-    registrationNumber: "",
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -287,10 +326,9 @@ function NGORegistrationStep({ onBack }: { onBack: () => void }) {
             <label className="text-sm font-medium text-foreground">Organization Name</label>
             <input
               type="text"
-              placeholder="Your Organization"
               value={formData.organizationName}
               onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
-              className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               required
             />
           </div>
@@ -301,10 +339,9 @@ function NGORegistrationStep({ onBack }: { onBack: () => void }) {
               <label className="text-sm font-medium text-foreground">Email Address</label>
               <input
                 type="email"
-                placeholder="contact@organization.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
@@ -312,10 +349,9 @@ function NGORegistrationStep({ onBack }: { onBack: () => void }) {
               <label className="text-sm font-medium text-foreground">Phone Number</label>
               <input
                 type="tel"
-                placeholder="+1 (555) 000-0000"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
           </div>
@@ -326,20 +362,18 @@ function NGORegistrationStep({ onBack }: { onBack: () => void }) {
               <label className="text-sm font-medium text-foreground">Website</label>
               <input
                 type="url"
-                placeholder="https://example.com"
                 value={formData.website}
                 onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Location</label>
               <input
                 type="text"
-                placeholder="City, State"
                 value={formData.location}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
           </div>
@@ -348,23 +382,10 @@ function NGORegistrationStep({ onBack }: { onBack: () => void }) {
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Organization Description</label>
             <textarea
-              placeholder="Tell us about your organization..."
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary min-h-24"
+              className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary min-h-24"
               required
-            />
-          </div>
-
-          {/* Registration Number */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Registration Number</label>
-            <input
-              type="text"
-              placeholder="NGO/NPO Registration Number"
-              value={formData.registrationNumber}
-              onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
-              className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
@@ -374,10 +395,9 @@ function NGORegistrationStep({ onBack }: { onBack: () => void }) {
               <label className="text-sm font-medium text-foreground">Password</label>
               <input
                 type="password"
-                placeholder="••••••••"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
@@ -385,10 +405,9 @@ function NGORegistrationStep({ onBack }: { onBack: () => void }) {
               <label className="text-sm font-medium text-foreground">Confirm Password</label>
               <input
                 type="password"
-                placeholder="••••••••"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>

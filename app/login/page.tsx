@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
 import { Navbar } from "@/components/navbar"
@@ -13,12 +12,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [role, setRole] = useState<"volunteer" | "ngo">("volunteer")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     // TODO: Implement actual authentication
-    console.log("Login attempt:", { email, password, role })
+    console.log("Login attempt:", { email, password })
   }
 
   return (
@@ -33,34 +31,6 @@ export default function LoginPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Role Selection */}
-                <div className="space-y-3">
-                  <label className="text-sm font-medium text-foreground">I am a:</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setRole("volunteer")}
-                      className={`p-3 rounded-lg border-2 transition-smooth text-sm font-medium ${
-                        role === "volunteer"
-                          ? "border-primary bg-primary-light text-primary"
-                          : "border-border bg-surface text-foreground-light hover:border-primary"
-                      }`}
-                    >
-                      Volunteer
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setRole("ngo")}
-                      className={`p-3 rounded-lg border-2 transition-smooth text-sm font-medium ${
-                        role === "ngo"
-                          ? "border-primary bg-primary-light text-primary"
-                          : "border-border bg-surface text-foreground-light hover:border-primary"
-                      }`}
-                    >
-                      Organization
-                    </button>
-                  </div>
-                </div>
 
                 {/* Email */}
                 <div className="space-y-2">
@@ -70,7 +40,7 @@ export default function LoginPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder=""
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -85,7 +55,7 @@ export default function LoginPage() {
                   <Input
                     id="password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder=""
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
