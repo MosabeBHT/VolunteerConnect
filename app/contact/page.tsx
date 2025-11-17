@@ -29,33 +29,6 @@ export default function ContactPage() {
     }, 3000)
   }
 
-  const contactInfo = [
-    {
-      icon: "",
-      title: "Email",
-      value: "hello@volunteerconnect.com",
-      link: "mailto:hello@volunteerconnect.com",
-    },
-    {
-      icon: "",
-      title: "Phone",
-      value: "+1 (555) 123-4567",
-      link: "tel:+15551234567",
-    },
-    {
-      icon: "",
-      title: "Address",
-      value: "123 Main Street, San Francisco, CA 94105",
-      link: "#",
-    },
-    {
-      icon: "",
-      title: "Hours",
-      value: "Mon - Fri, 9:00 AM - 6:00 PM PST",
-      link: "#",
-    },
-  ]
-
   return (
     <>
       <Navbar />
@@ -68,25 +41,6 @@ export default function ContactPage() {
               <p className="text-xl text-foreground-light max-w-2xl mx-auto text-balance">
                 Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
               </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Contact Info Cards */}
-        <section className="py-16 md:py-24 bg-surface">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {contactInfo.map((info) => (
-                <Card key={info.title}>
-                  <CardContent className="pt-6 text-center">
-                    <div className="text-4xl mb-3">{info.icon}</div>
-                    <h3 className="font-bold text-foreground mb-2">{info.title}</h3>
-                    <a href={info.link} className="text-primary hover:underline text-sm">
-                      {info.value}
-                    </a>
-                  </CardContent>
-                </Card>
-              ))}
             </div>
           </div>
         </section>

@@ -12,8 +12,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export default function RegisterPage() {
   const searchParams = useSearchParams()
   const initialRole = (searchParams.get("role") as "volunteer" | "ngo") || "volunteer"
+  const skipRoleSelection = searchParams.get("role") !== null
   const [role, setRole] = useState<"volunteer" | "ngo">(initialRole)
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(skipRoleSelection ? 2 : 1)
 
   return (
     <>
