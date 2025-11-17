@@ -131,7 +131,7 @@ export default function AboutPage() {
         <section className="bg-linear-to-br from-primary-light via-background to-background py-20 md:py-32">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
-              <Badge className="mb-4 bg-primary">Since 2023</Badge>
+              <Badge className="mb-4 bg-primary">impact</Badge>
               <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 text-balance">
                 Making Volunteering as Easy as Ordering Coffee
               </h1>
@@ -153,7 +153,7 @@ export default function AboutPage() {
               <Card>
                 <CardContent className="pt-6">
                   <p className="text-lg text-foreground-light mb-4">
-                    <strong className="text-foreground">It started with frustration.</strong> Our founder, Mosabe , joined a volunteering experience in Nepal. Simple enough, right? Wrong.
+                    <strong className="text-foreground">It started with frustration.</strong> Our founders, <strong className="text-foreground">Mosabe & Yazan</strong>, joined a volunteering experience in Nepal. Simple enough, right? Wrong.
                   </p>
                   <p className="text-lg text-foreground-light mb-4">
                     After weeks of searching endlessly, wasting energy on complicated applications, and almost giving up, Mosabe finally got accepted and joined the volunteering mission. And once he arrived, he realized how life-changing the experience was, something everyone should live. But most people never reach that point because the process is too long, too confusing, and opportunities are hard to find. That is when he started thinking:<strong className="text-foreground"> how can I solve this? </strong>

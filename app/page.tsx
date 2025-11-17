@@ -157,12 +157,7 @@ export default function Home() {
                   you with opportunities that align with your skills, interests, and 
                   schedule—making it easier than ever to give back to your community.
                 </p>
-                <Button size="lg" className="mt-4" variant="default" asChild>
-                  <Link href="/guide" className="flex items-center gap-2">
-                    <span>Learn How It Works</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </Button>
+                
               </div>
 
               {/* Right Column - Feature Highlights */}

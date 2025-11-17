@@ -17,16 +17,105 @@ export default function ContactPage() {
     message: "",
   })
 
-  const [submitted, setSubmitted] = useState(false)
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isLoading, setIsLoading] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [showError, setShowError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
+
+  // Real-time validation
+  const validateField = (field: string, value: string) => {
+    let error = ""
+
+    switch (field) {
+      case "name":
+        if (value.trim().length === 0) {
+          error = "Name is required"
+        } else if (value.trim().length < 2) {
+          error = "Name must be at least 2 characters"
+        } else if (!/^[a-zA-Z\s\-']+$/.test(value)) {
+          error = "Name can only contain letters, spaces, hyphens, and apostrophes"
+        }
+        break
+
+      case "email":
+        if (value.trim().length === 0) {
+          error = "Email is required"
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          error = "Please enter a valid email address"
+        }
+        break
+
+      case "subject":
+        if (value.trim().length === 0) {
+          error = "Subject is required"
+        } else if (value.trim().length < 3) {
+          error = "Subject must be at least 3 characters"
+        }
+        break
+
+      case "message":
+        if (value.trim().length === 0) {
+          error = "Message is required"
+        } else if (value.trim().length < 10) {
+          error = "Message must be at least 10 characters"
+        }
+        break
+    }
+
+    setErrors((prev) => ({ ...prev, [field]: error }))
+    return error === ""
+  }
+
+  // Validate entire form
+  const validateForm = (): boolean => {
+    const nameValid = validateField("name", formData.name)
+    const emailValid = validateField("email", formData.email)
+    const subjectValid = validateField("subject", formData.subject)
+    const messageValid = validateField("message", formData.message)
+
+    return nameValid && emailValid && subjectValid && messageValid
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Contact form submitted:", formData)
-    setSubmitted(true)
-    setTimeout(() => {
+
+    // Validate all fields
+    if (!validateForm()) {
+      setErrorMessage("Please fix all errors before submitting")
+      setShowError(true)
+      setTimeout(() => setShowError(false), 3000)
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+
+      console.log("Contact form submitted:", formData)
+
+      // Show success message
+      setShowSuccess(true)
       setFormData({ name: "", email: "", subject: "", message: "" })
-      setSubmitted(false)
-    }, 3000)
+      setErrors({ name: "", email: "", subject: "", message: "" })
+
+      // Hide success message after 5 seconds
+      setTimeout(() => setShowSuccess(false), 5000)
+    } catch (error) {
+      setErrorMessage("Failed to send message. Please try again.")
+      setShowError(true)
+      setTimeout(() => setShowError(false), 3000)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -34,7 +123,7 @@ export default function ContactPage() {
       <Navbar />
       <main>
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-primary-light via-background to-background py-20 md:py-32">
+        <section className="bg-linear-to-br from-primary-light via-background to-background py-20 md:py-32">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 text-balance">Get in Touch</h1>
@@ -54,14 +143,34 @@ export default function ContactPage() {
                 <CardDescription>We'll get back to you within 24 hours</CardDescription>
               </CardHeader>
               <CardContent>
-                {submitted ? (
-                  <div className="text-center py-12">
-                    <div className="text-5xl mb-4">✅</div>
-                    <h3 className="text-xl font-bold text-foreground mb-2">Thank you for reaching out!</h3>
-                    <p className="text-foreground-light">We've received your message and will get back to you soon.</p>
+                {/* Success Toast */}
+                {showSuccess && (
+                  <div className="mb-6 p-4 rounded-lg bg-green-50 border border-green-200 flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center shrink-0">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-green-800">Message sent successfully!</p>
+                      <p className="text-sm text-green-600">We'll get back to you within 24 hours.</p>
+                    </div>
                   </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                )}
+
+                {/* Error Toast */}
+                {showError && (
+                  <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center shrink-0">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </div>
+                    <p className="font-semibold text-red-800">{errorMessage}</p>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Name */}
                     <div className="space-y-2">
                       <label htmlFor="name" className="text-sm font-medium text-foreground">
@@ -71,9 +180,15 @@ export default function ContactPage() {
                         id="name"
                         placeholder="John Doe"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, name: e.target.value })
+                          validateField("name", e.target.value)
+                        }}
+                        onBlur={(e) => validateField("name", e.target.value)}
+                        className={errors.name ? "border-red-500" : ""}
                         required
                       />
+                      {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
                     </div>
 
                     {/* Email */}
@@ -86,9 +201,15 @@ export default function ContactPage() {
                         type="email"
                         placeholder="you@example.com"
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, email: e.target.value })
+                          validateField("email", e.target.value)
+                        }}
+                        onBlur={(e) => validateField("email", e.target.value)}
+                        className={errors.email ? "border-red-500" : ""}
                         required
                       />
+                      {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                     </div>
 
                     {/* Subject */}
@@ -100,9 +221,15 @@ export default function ContactPage() {
                         id="subject"
                         placeholder="How can we help?"
                         value={formData.subject}
-                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                        onChange={(e) => {
+                          setFormData({ ...formData, subject: e.target.value })
+                          validateField("subject", e.target.value)
+                        }}
+                        onBlur={(e) => validateField("subject", e.target.value)}
+                        className={errors.subject ? "border-red-500" : ""}
                         required
                       />
+                      {errors.subject && <p className="text-red-500 text-sm mt-1">{errors.subject}</p>}
                     </div>
 
                     {/* Message */}
@@ -112,20 +239,47 @@ export default function ContactPage() {
                       </label>
                       <textarea
                         id="message"
-                        placeholder="Tell us more about your inquiry..."
+                        placeholder="Tell us more about your inquiry... (minimum 10 characters)"
                         value={formData.message}
-                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        className="w-full px-4 py-2 rounded-lg border border-border bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary min-h-32"
+                        onChange={(e) => {
+                          setFormData({ ...formData, message: e.target.value })
+                          validateField("message", e.target.value)
+                        }}
+                        onBlur={(e) => validateField("message", e.target.value)}
+                        className={`w-full px-4 py-2 rounded-lg border ${
+                          errors.message ? "border-red-500" : "border-border"
+                        } bg-surface text-foreground placeholder:text-foreground-light focus:outline-none focus:ring-2 focus:ring-primary min-h-32`}
                         required
                       />
+                      {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
                     </div>
 
                     {/* Submit Button */}
-                    <Button type="submit" className="w-full" size="lg">
-                      Send Message
+                    <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                      {isLoading ? (
+                        <div className="flex items-center gap-2">
+                          <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                          </svg>
+                          <span>Sending...</span>
+                        </div>
+                      ) : (
+                        "Send Message"
+                      )}
                     </Button>
                   </form>
-                )}
               </CardContent>
             </Card>
           </div>
