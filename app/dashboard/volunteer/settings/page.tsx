@@ -3,6 +3,9 @@
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { toast } from "@/hooks/use-toast"
+
+const comingSoon = () => toast({ title: "Coming Soon", description: "This feature is not yet available." })
 
 export default function SettingsPage() {
   return (
@@ -76,13 +79,13 @@ export default function SettingsPage() {
             <CardDescription>Manage your account</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full bg-transparent">
+            <Button variant="outline" className="w-full bg-transparent" onClick={comingSoon}>
               Change Password
             </Button>
-            <Button variant="outline" className="w-full bg-transparent">
+            <Button variant="outline" className="w-full bg-transparent" onClick={comingSoon}>
               Download My Data
             </Button>
-            <Button variant="outline" className="w-full bg-transparent text-error">
+            <Button variant="outline" className="w-full bg-transparent text-error" onClick={comingSoon}>
               Delete Account
             </Button>
           </CardContent>

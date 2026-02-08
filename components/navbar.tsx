@@ -3,9 +3,22 @@
 import Link from "next/link"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { useAuth } from "@/contexts/auth-context"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { User, LogOut, LayoutDashboard } from "lucide-react"
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const { user, isAuthenticated, logout } = useAuth()
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/60">
@@ -38,14 +51,80 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Auth Buttons */}
+          {/* Auth Buttons / User Menu */}
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" asChild className="hidden sm:inline-flex bg-transparent">
-              <Link href="/login">Sign In</Link>
-            </Button>
-            <Button size="sm" asChild>
-              <Link href="/register">Sign Up</Link>
-            </Button>
+            {isAuthenticated && user ? (
+              <>
+                {/* Desktop User Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild className="hidden md:flex">
+                    <Button variant="ghost" className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="bg-primary text-white text-sm">
+                          {user.volunteerProfile?.firstName?.[0] || user.ngoProfile?.organizationName?.[0] || user.email[0].toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm font-medium">
+                        {user.volunteerProfile?.firstName || user.ngoProfile?.organizationName || 'User'}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium">
+                          {user.volunteerProfile?.firstName && user.volunteerProfile?.lastName
+                            ? `${user.volunteerProfile.firstName} ${user.volunteerProfile.lastName}`
+                            : user.ngoProfile?.organizationName || 'User'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{user.email}</p>
+                        <Badge variant="secondary" className="w-fit text-xs">
+                          {user.role === 'VOLUNTEER' ? 'Volunteer' : user.role === 'NGO' ? 'Organization' : 'Admin'}
+                        </Badge>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href={user.role === 'VOLUNTEER' ? '/dashboard/volunteer' : '/dashboard/ngo'} className="cursor-pointer">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href={user.role === 'VOLUNTEER' ? '/dashboard/volunteer/profile' : '/dashboard/ngo/profile'} className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-600">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                {/* Mobile User Avatar */}
+                <Button variant="ghost" size="sm" asChild className="md:hidden">
+                  <Link href={user.role === 'VOLUNTEER' ? '/dashboard/volunteer' : '/dashboard/ngo'}>
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-primary text-white text-sm">
+                        {user.volunteerProfile?.firstName?.[0] || user.ngoProfile?.organizationName?.[0] || user.email[0].toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="outline" size="sm" asChild className="hidden sm:inline-flex bg-transparent">
+                  <Link href="/login">Sign In</Link>
+                </Button>
+                <Button size="sm" asChild>
+                  <Link href="/register">Sign Up</Link>
+                </Button>
+              </>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -91,12 +170,36 @@ export function Navbar() {
             >
               Contact Us
             </Link>
-            <Link
-              href="/login"
-              className="block px-4 py-2 rounded-lg text-foreground-light hover:bg-primary-light hover:text-foreground transition-smooth"
-            >
-              Sign In
-            </Link>
+            
+            {isAuthenticated && user ? (
+              <>
+                <Link
+                  href={user.role === 'VOLUNTEER' ? '/dashboard/volunteer' : '/dashboard/ngo'}
+                  className="block px-4 py-2 rounded-lg text-foreground-light hover:bg-primary-light hover:text-foreground transition-smooth"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href={user.role === 'VOLUNTEER' ? '/dashboard/volunteer/profile' : '/dashboard/ngo/profile'}
+                  className="block px-4 py-2 rounded-lg text-foreground-light hover:bg-primary-light hover:text-foreground transition-smooth"
+                >
+                  Profile Settings
+                </Link>
+                <button
+                  onClick={logout}
+                  className="w-full text-left px-4 py-2 rounded-lg text-red-600 hover:bg-red-50 transition-smooth"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="block px-4 py-2 rounded-lg text-foreground-light hover:bg-primary-light hover:text-foreground transition-smooth"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         )}
       </div>

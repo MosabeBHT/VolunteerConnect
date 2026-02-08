@@ -1,8 +1,11 @@
+"use client"
+
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { useAuth } from "@/contexts/auth-context"
 import Link from "next/link"
 import Image from "next/image"
 import { 
@@ -44,12 +47,14 @@ const OrganizationImage = () => (
 )
 
 export default function Home() {
+  const { user, isAuthenticated } = useAuth()
+  
   return (
     <>
       <Navbar />
       <main>
         {/* -------------------- Hero Section -------------------- */}
-        <section className="relative overflow-hidden bg-gradient-to-tr from-[#6b47c0] via-[#524584] to-[#3a3556] py-8 md:py-12">
+        <section className="relative overflow-hidden bg-linear-to-tr from-[#6b47c0] via-[#524584] to-[#3a3556] py-8 md:py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
             <div className="relative text-center pt-16 pb-16 md:pt-20 md:pb-20 text-white">
               <Badge className="mb-6 bg-white/20 text-white border-white/30 hover:bg-white/30">
@@ -58,32 +63,58 @@ export default function Home() {
               </Badge>
               
               <h1 className="text-5xl md:text-7xl font-extrabold mb-4 text-balance">
-                The Gateway for Volunteering
+                {isAuthenticated 
+                  ? `Welcome back, ${user?.volunteerProfile?.firstName || user?.ngoProfile?.organizationName || 'Friend'}!` 
+                  : 'The Gateway for Volunteering'}
               </h1>
               
               <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-10 text-balance">
-                Making community impact simple, meaningful, and rewarding
+                {isAuthenticated
+                  ? user?.role === 'VOLUNTEER' 
+                    ? 'Ready to make a difference today?'
+                    : 'Connect with passionate volunteers for your missions'
+                  : 'Making community impact simple, meaningful, and rewarding'}
               </p>
               
               {/* Dual CTAs */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" className="shadow-lg bg-white text-purple-700 hover:bg-gray-100" asChild> 
-                  <Link href="/opportunities" className="flex items-center gap-2">
-                    <span>Find Opportunities</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" className="shadow-lg border-white text-white hover:bg-white/10" asChild>
-                  <Link href="/register?role=ngo">
-                    Post a Mission
-                  </Link>
-                </Button>
+                {isAuthenticated ? (
+                  <>
+                    <Link href={user?.role === 'VOLUNTEER' ? '/opportunities' : '/dashboard/ngo/create-mission'}>
+                      <Button size="lg" className="shadow-lg bg-white text-purple-700 hover:bg-gray-100 flex items-center gap-2"> 
+                        <span>{user?.role === 'VOLUNTEER' ? 'Browse Opportunities' : 'Create Mission'}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Button>
+                    </Link>
+                    <Link href={user?.role === 'VOLUNTEER' ? '/dashboard/volunteer' : '/dashboard/ngo'}>
+                      <Button size="lg" variant="outline" className="shadow-lg border-white text-white hover:bg-white/10">
+                        Go to Dashboard
+                      </Button>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/opportunities">
+                      <Button size="lg" className="shadow-lg bg-white text-purple-700 hover:bg-gray-100 flex items-center gap-2"> 
+                        <span>Find Opportunities</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </Button>
+                    </Link>
+                    <Link href="/register?role=ngo">
+                      <Button size="lg" variant="outline" className="shadow-lg border-white text-white hover:bg-white/10">
+                        Post a Mission
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
 
               {/* Trust Badge */}
               <p className="mt-8 text-sm text-gray-300">
                 <Users className="inline w-4 h-4 mr-1" />
-                Join 15,000+ volunteers making a difference
+                {isAuthenticated 
+                  ? `You're part of 15,000+ volunteers making a difference`
+                  : 'Join 15,000+ volunteers making a difference'}
               </p>
 
               <VolunteerImage />
@@ -163,7 +194,7 @@ export default function Home() {
               {/* Right Column - Feature Highlights */}
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center shrink-0">
                     <CheckCircle2 className="w-6 h-6 text-primary" />
                   </div>
                   <div>
@@ -175,7 +206,7 @@ export default function Home() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center shrink-0">
                     <Shield className="w-6 h-6 text-primary" />
                   </div>
                   <div>
@@ -187,7 +218,7 @@ export default function Home() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center shrink-0">
                     <TrendingUp className="w-6 h-6 text-primary" />
                   </div>
                   <div>
@@ -224,21 +255,21 @@ export default function Home() {
                   <h3 className="text-2xl font-bold text-foreground mb-4">For Volunteers</h3>
                   <ul className="space-y-3 text-foreground-light">
                     <li className="flex items-start gap-2">
-                      <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                       <span>Discover local opportunities near you</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <Award className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <Award className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                       <span>Track hours and earn achievement badges</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <Target className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                      <Target className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                       <span>Get personalized mission recommendations</span>
                     </li>
                   </ul>
-                  <Button className="w-full mt-6" asChild>
-                    <Link href="/register?role=volunteer">Get Started as Volunteer</Link>
-                  </Button>
+                  <Link href="/register?role=volunteer">
+                    <Button className="w-full mt-6">Get Started as Volunteer</Button>
+                  </Link>
                 </CardContent>
               </Card>
 
@@ -251,21 +282,21 @@ export default function Home() {
                   <h3 className="text-2xl font-bold mb-4">For Organizations</h3>
                   <ul className="space-y-3 text-gray-200">
                     <li className="flex items-start gap-2">
-                      <Users className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                      <Users className="w-5 h-5 text-white shrink-0 mt-0.5" />
                       <span>Reach thousands of motivated volunteers</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <Clock className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                      <Clock className="w-5 h-5 text-white shrink-0 mt-0.5" />
                       <span>Manage applications in one dashboard</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <TrendingUp className="w-5 h-5 text-white flex-shrink-0 mt-0.5" />
+                      <TrendingUp className="w-5 h-5 text-white shrink-0 mt-0.5" />
                       <span>Fill volunteer roles faster than ever</span>
                     </li>
                   </ul>
-                  <Button className="w-full mt-6 bg-white text-purple-700 hover:bg-gray-100" asChild>
-                    <Link href="/register?role=ngo">Register Your Organization</Link>
-                  </Button>
+                  <Link href="/register?role=ngo">
+                    <Button className="w-full mt-6 bg-white text-purple-700 hover:bg-gray-100">Register Your Organization</Button>
+                  </Link>
                 </CardContent>
               </Card>
             </div>
@@ -330,7 +361,7 @@ export default function Home() {
                       <span className="text-primary font-bold text-lg">SJ</span>
                     </div>
                     <div>
-                      <p className="font-bold text-foreground">Sarah Johnson</p>
+                      <p className="font-bold text-foreground">Yazan</p>
                       <p className="text-sm text-foreground-light">Volunteer</p>
                     </div>
                   </div>
@@ -349,7 +380,7 @@ export default function Home() {
                       <span className="text-primary font-bold text-lg">GE</span>
                     </div>
                     <div>
-                      <p className="font-bold text-foreground">Green Earth Initiative</p>
+                      <p className="font-bold text-foreground">Ensia</p>
                       <p className="text-sm text-foreground-light">NGO</p>
                     </div>
                   </div>
@@ -368,7 +399,7 @@ export default function Home() {
                       <span className="text-primary font-bold text-lg">MC</span>
                     </div>
                     <div>
-                      <p className="font-bold text-foreground">Mike Chen</p>
+                      <p className="font-bold text-foreground">Yazan</p>
                       <p className="text-sm text-foreground-light">Volunteer</p>
                     </div>
                   </div>
@@ -437,7 +468,7 @@ export default function Home() {
         </section>
 
         {/* -------------------- Final CTA Section -------------------- */}
-        <section className="py-16 md:py-24 bg-gradient-to-br from-primary-light to-primary/20">
+        <section className="py-16 md:py-24 bg-linear-to-br from-primary-light to-primary/20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
               Ready to Make a Difference?
@@ -446,15 +477,15 @@ export default function Home() {
               Join thousands of volunteers and organizations creating positive change in communities worldwide.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild>
-                <Link href="/register?role=volunteer" className="flex items-center gap-2">
+              <Link href="/register?role=volunteer">
+                <Button size="lg" className="flex items-center gap-2">
                   <span>Start Volunteering Today</span>
                   <ArrowRight className="w-4 h-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/register?role=ngo">Post Your First Mission</Link>
-              </Button>
+                </Button>
+              </Link>
+              <Link href="/register?role=ngo">
+                <Button size="lg" variant="outline">Post Your First Mission</Button>
+              </Link>
             </div>
           </div>
         </section>

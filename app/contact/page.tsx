@@ -97,10 +97,8 @@ export default function ContactPage() {
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      console.log("Contact form submitted:", formData)
+      // Simulate API call (contact form backend not yet implemented)
+      await new Promise((resolve) => setTimeout(resolve, 1500))
 
       // Show success message
       setShowSuccess(true)

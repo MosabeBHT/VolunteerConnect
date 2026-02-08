@@ -8,15 +8,29 @@ import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useAuth } from "@/contexts/auth-context"
+import { Alert } from "@/components/ui/alert"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const { login } = useAuth()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement actual authentication
-    console.log("Login attempt:", { email, password })
+    setError("")
+    setIsLoading(true)
+
+    try {
+      await login(email, password)
+      // Redirect handled by auth context
+    } catch (err: any) {
+      setError(err.message || "Invalid email or password")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -32,6 +46,13 @@ export default function LoginPage() {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
 
+                {/* Error Alert */}
+                {error && (
+                  <Alert variant="destructive">
+                    <p className="text-sm">{error}</p>
+                  </Alert>
+                )}
+
                 {/* Email */}
                 <div className="space-y-2">
                   <label htmlFor="email" className="text-sm font-medium text-foreground">
@@ -40,10 +61,11 @@ export default function LoginPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder=""
+                    placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -55,10 +77,11 @@ export default function LoginPage() {
                   <Input
                     id="password"
                     type="password"
-                    placeholder=""
+                    placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
 
@@ -70,8 +93,8 @@ export default function LoginPage() {
                 </div>
 
                 {/* Submit Button */}
-                <Button type="submit" className="w-full" size="lg">
-                  Sign In
+                <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                  {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
 
                 {/* Sign Up Link */}

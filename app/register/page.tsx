@@ -8,6 +8,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function RegisterPage() {
   const searchParams = useSearchParams()
@@ -85,6 +86,7 @@ function RoleSelectionStep({
 
 function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
   const baseInterests = ["Education", "Environment", "Healthcare", "Community", "Animals", "Arts"]
+  const { register } = useAuth()
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -216,20 +218,20 @@ function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      await register({
+        email: formData.email,
+        password: formData.password,
+        role: 'VOLUNTEER',
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        location: formData.location || 'Not specified',
+      })
       
-      console.log("Volunteer registration:", formData)
-      
-      setShowSuccess(true)
-      setTimeout(() => {
-        setShowSuccess(false)
-        // Here you would redirect to login or dashboard
-      }, 3000)
-    } catch (error) {
-      setErrorMessage("Registration failed. Please try again.")
+      // Redirect handled by auth context
+    } catch (error: any) {
+      setErrorMessage(error.message || "Registration failed. Please try again.")
       setShowError(true)
-      setTimeout(() => setShowError(false), 3000)
+      setTimeout(() => setShowError(false), 5000)
     } finally {
       setIsLoading(false)
     }
@@ -551,6 +553,8 @@ function VolunteerRegistrationStep({ onBack }: { onBack: () => void }) {
 }
 
 function NGORegistrationStep({ onBack }: { onBack: () => void }) {
+  const { register } = useAuth()
+  
   const [formData, setFormData] = useState({
     organizationName: "",
     email: "",
@@ -697,20 +701,21 @@ function NGORegistrationStep({ onBack }: { onBack: () => void }) {
     setIsLoading(true)
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      await register({
+        email: formData.email,
+        password: formData.password,
+        role: 'NGO',
+        organizationName: formData.organizationName,
+        location: formData.location || 'Not specified',
+        description: formData.description || 'No description provided',
+        registrationNumber: `REG-${Date.now()}`,
+      })
       
-      console.log("NGO registration:", formData)
-      
-      setShowSuccess(true)
-      setTimeout(() => {
-        setShowSuccess(false)
-        // Here you would redirect to login or dashboard
-      }, 3000)
-    } catch (error) {
-      setErrorMessage("Registration failed. Please try again.")
+      // Redirect handled by auth context
+    } catch (error: any) {
+      setErrorMessage(error.message || "Registration failed. Please try again.")
       setShowError(true)
-      setTimeout(() => setShowError(false), 3000)
+      setTimeout(() => setShowError(false), 5000)
     } finally {
       setIsLoading(false)
     }
@@ -969,3 +974,5 @@ function NGORegistrationStep({ onBack }: { onBack: () => void }) {
     </Card>
   )
 }
+
+

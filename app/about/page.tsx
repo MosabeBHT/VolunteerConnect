@@ -74,19 +74,19 @@ export default function AboutPage() {
 
   const testimonials = [
     {
-      name: "Sarah Johnson",
+      name: "Yazan",
       role: "Volunteer",
       content: "I wanted to help my local food bank but didn't know where to start. VolunteerConnect made it as easy as ordering food online. Applied in 2 minutes, volunteered the next week!",
       initials: "SJ",
     },
     {
-      name: "Michael Chen",
+      name: "Yazan ",
       role: "Education for All - Director",
       content: "Before VolunteerConnect, we spent hours posting on multiple platforms. Now we post once and get qualified volunteers within days. It's changed how we operate.",
       initials: "MC",
     },
     {
-      name: "Emma Rodriguez",
+      name: "Yazan",
       role: "Volunteer",
       content: "As a college student with a crazy schedule, I love that I can filter by duration and date. Found a 2-hour opportunity that fit perfectly between classes.",
       initials: "ER",
